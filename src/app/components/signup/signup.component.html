@@ -1,0 +1,46 @@
+
+<div class="container">
+    <div class="form-signup">
+      <form [formGroup]="signupForm" (ngSubmit)="onSignUp()">
+        <img class="mb-4" src="../../../assets/img/work-order.svg" alt="" width="72" height="57">
+        <h1 class="h3 mb-3 fw-normal">Por favor registrate</h1>
+  
+        <div class="form-floating">
+          <input formControlName="name" type="text" class="form-control" id="userEmail"
+            placeholder="name@example.com">
+          <label for="userEmail">Name</label>
+        </div>
+        
+        <div class="form-floating">
+          <input formControlName="email" type="email" class="form-control" id="userName"
+            placeholder="name@example.com">
+          <label for="userName">Email</label>
+        </div>
+
+        <div class="form-floating">
+          <input formControlName="phoneNumber" type="number" class="form-control" id="phoneNumber"
+            placeholder="name@example.com">
+          <label for="phoneNumber">Phone Number</label>
+        </div>
+        <div class="form-floating">
+          <input formControlName="address" type="text" class="form-control" id="address"
+            placeholder="name@example.com">
+          <label for="address">Address</label>
+        </div>
+        <div class="form-floating">
+          <input formControlName="password" type="password" class="form-control" id="userPassword"
+            placeholder="name@example.com">
+          <label for="userPassword">Password</label>
+        </div>
+        <div class="form-floating">
+          <input formControlName="repeatpassword" type="password" class="form-control" id="repeatpassword"
+            placeholder="name@example.com">
+          <label for="repeatpassword">Repeat Password</label>
+        </div>
+  
+        <button class="w-100 btn btn-lg btn-primary mt-3" type="submit">Sign up</button>
+        <p class="mt-5 mb-3 text-muted">© 2017–2021</p>
+      </form>
+    </div>
+  
+  </div>

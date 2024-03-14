@@ -1,0 +1,10 @@
+.list-item-active{
+    color: white !important;
+}
+.list-item-active::ng-deep.mat-list-item-content{
+
+    background:black !important;
+    &:hover{
+        background: black !important;
+    }
+}

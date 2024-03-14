@@ -1,0 +1,665 @@
+<div class="container">
+  <form [formGroup]="workOrderForm" class="row g-3" (ngSubmit)="onSave()">
+
+    <div class="col-sm-2">
+      <label for="numero_OT" class="form-label">No. Orden de Trabajo</label>
+      <input
+        formControlName="numero_OT"
+        type="number"
+        class="form-control"
+        id="numero_OT"
+      />
+    </div>
+
+    <div class="col-sm-5 pe-3">
+      <label *ngIf="workOrder" for="system_id" class="form-label"
+        >Sistema:
+      </label>
+      <select
+        (change)="changeSubSystems()"
+        formControlName="system_id"
+        class="form-select"
+        aria-label="Default select example"
+      >
+        <option *ngFor="let Sys of systems" [value]="Sys.id">
+          {{ Sys.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-sm-5 pe-3">
+      <label *ngIf="workOrder" for="subSystem_id" class="form-label"
+        >Instalación:
+      </label>
+      <select
+        aria-label="Disabled select example"
+        formControlName="subSystem_id"
+        class="form-select"
+        aria-label="Default select example"
+      >
+        <option *ngFor="let subSys of subsystems" [value]="subSys.id">
+          {{ subSys.name }}
+        </option>
+      </select>
+    </div>
+
+
+
+
+
+    <!-- ------------Fechas---------------------------------- -->
+    <div class="col-md-4">
+      <label for="f_emision" class="form-label">Fecha de emisión</label>
+      <input
+        formControlName="f_emision"
+        type="date"
+        class="form-control"
+        id="f_emision"
+      />
+    </div>
+    <div class="col-md-4">
+      <label for="f_inicio" class="form-label">Fecha de inicio</label>
+      <input
+        formControlName="f_inicio"
+        type="date"
+        class="form-control"
+        id="f_inicio"
+      />
+    </div>
+    <div class="col-md-4">
+      <label for="f_terminac" class="form-label">Fecha de terminación</label>
+      <input
+        formControlName="f_terminac"
+        type="date"
+        class="form-control"
+        id="f_terminac"
+      />
+    </div>
+
+    
+
+    <!-- ------------Descripcion del trabajo---------------------------------- -->
+    <div class="col-md-6 pe-3 pt-3">
+      <label for="trabajo_a_realizar" class="form-label"
+        >Trabajo a realizar</label
+      >
+      <textarea *ngIf="workOrder!=undefined"
+        formControlName="trabajo_a_realizar"
+        type="text"
+        class="form-control"
+        id="trabajo_a_realizar"
+        [placeholder]="workOrder.trabajo_a_realizar!==null ? '':'Mantenimiento '+workOrder.type +' a '+(workOrder.subSystem_id |subSytemName) "
+      ></textarea>
+    </div>
+    <div class="col-md-6 pt-3">
+      <label for="trabajo_realizado" class="form-label"
+        >Trabajo realizado</label
+      >
+      <textarea *ngIf="workOrder"
+        formControlName="trabajo_realizado"
+        type="text"
+        class="form-control"
+        id="trabajo_realizado"
+        [placeholder]="workOrder.trabajo_realizado!==null ? '':'Mantenimiento realizado según lo especificado en la '+getSubSystemByID(workOrder.subSystem_id).IT"
+      ></textarea>
+    </div>
+
+
+    <!-- ------------Añadir datos extras---------------------------------- -->
+    <div  class="row mt-3">
+      <div class="col-sm-4">
+        <label for="gastos_alimentacion_hospedaje" class="form-label">Gastos de alimentación y hospedaje</label>
+      <input
+      (change)="AlimentosYHospedaje()"
+      class="form-check-input ms-2"
+      type="checkbox"
+      value=""
+      id="flexCheckDefault"
+    />
+      </div>
+      <div class="col-sm-4">
+        <label for="transportacion" class="form-label">Transportación</label>
+      <input
+        (change)="Transportacion()"
+        class="form-check-input ms-2"
+        type="checkbox"
+        value=""
+        id="flexCheckDefault"
+      />
+      </div>
+      <div class="col-sm-4">
+        <label for="gastos_materiales" class="form-label">Añadir Gastos de Materiales</label>
+      <input
+        (change)="GastosDeMateriales()"
+        class="form-check-input ms-2"
+        type="checkbox"
+        value=""
+        id="flexCheckDefault"
+      />
+      </div>
+    </div>
+
+    <!-- ------------Gastos de alimentación y hospedaje---------------------------------- -->
+    <div *ngIf="mostrarAlimentosYHospedaje" id="gastos_alimentacion_hospedaje" class="col-md-12">
+      <label for="gastos_alimentacion_hospedaje" class="form-label"
+        >Gastos de alimentación y hospedaje</label
+      >
+      <div  class="row">
+        <div class="col-sm-2">
+          <label for="g_a_fecha1" class="form-label">Fecha</label>
+          <input
+            formControlName="g_a_fecha1"
+            type="date"
+            class="form-control"
+            id="g_a_fecha1"
+          />
+          <input
+            formControlName="g_a_fecha2"
+            type="date"
+            class="form-control mt-2"
+            id="g_a_fecha2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="g_a_tarj1" class="form-label">No. Tarjeta</label>
+          <input
+            formControlName="g_a_tarj1"
+            type="text"
+            class="form-control"
+            id="g_a_tarj1"
+          />
+          <input
+            formControlName="g_a_tarj2"
+            type="text"
+            class="form-control mt-2"
+            id="g_a_tarj2"
+          />
+        </div>
+
+        <div class="col-sm-1">
+          <label for="g_a_slip1" class="form-label">No. Slip</label>
+          <input
+            formControlName="g_a_slip1"
+            type="text"
+            class="form-control"
+            id="g_a_slip1"
+          />
+          <input
+            formControlName="g_a_slip2"
+            type="text"
+            class="form-control mt-2"
+            id="g_a_slip2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="g_a_importe1" class="form-label">Importe</label>
+          <input
+            formControlName="g_a_importe1"
+            type="number"
+            class="form-control"
+            id="g_a_importe1"
+          />
+          <input
+            formControlName="g_a_importe2"
+            type="number"
+            class="form-control mt-2"
+            id="g_a_importe2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="g_a_tarj3" class="form-label">No. Tarjeta</label>
+          <input
+            formControlName="g_a_tarj3"
+            type="text"
+            class="form-control"
+            id="g_a_tarj3"
+          />
+          <input
+            formControlName="g_a_tarj4"
+            type="text"
+            class="form-control mt-2"
+            id="g_a_tarj4"
+          />
+        </div>
+
+        <div class="col-sm-1">
+          <label for="g_a_slip3" class="form-label">No. Slip</label>
+          <input
+            formControlName="g_a_slip3"
+            type="text"
+            class="form-control"
+            id="g_a_slip3"
+          />
+          <input
+            formControlName="g_a_slip4"
+            type="text"
+            class="form-control mt-2"
+            id="g_a_slip4"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="g_a_importe3" class="form-label">Importe</label>
+          <input
+            formControlName="g_a_importe3"
+            type="number"
+            class="form-control"
+            id="g_a_importe3"
+          />
+          <input
+            formControlName="g_a_importe4"
+            type="number"
+            class="form-control mt-2"
+            id="g_a_importe4"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------Transportacion---------------------------------- -->
+    <div *ngIf="mostrarTransportacion" id="transportacion" class="col-md-12">
+      <label for="transportacion" class="form-label">Transportación</label>
+
+      <div class="row">
+        <div class="col-sm-4">
+          <label for="vehiculo1" class="form-label">Vehículo</label>
+          <input
+            formControlName="vehiculo1"
+            type="text"
+            class="form-control"
+            id="vehiculo1"
+          />
+          <input
+            formControlName="vehiculo2"
+            type="text"
+            class="form-control mt-2"
+            id="vehiculo2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="km1" class="form-label">Km. recorridos</label>
+          <input
+            formControlName="km1"
+            type="text"
+            class="form-control"
+            id="km1"
+          />
+          <input
+            formControlName="km2"
+            type="text"
+            class="form-control mt-2"
+            id="km2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="diesel1" class="form-label">Diesel</label>
+          <input
+            formControlName="diesel1"
+            type="text"
+            class="form-control"
+            id="diesel1"
+          />
+          <input
+            formControlName="diesel2"
+            type="text"
+            class="form-control mt-2"
+            id="diesel2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="gasolina1" class="form-label">Gasolina</label>
+          <input
+            formControlName="gasolina1"
+            type="number"
+            class="form-control"
+            id="gasolina1"
+          />
+          <input
+            formControlName="gasolina2"
+            type="number"
+            class="form-control mt-2"
+            id="gasolina2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="aceite1" class="form-label">Aceite</label>
+          <input
+            formControlName="aceite1"
+            type="text"
+            class="form-control"
+            id="aceite1"
+          />
+          <input
+            formControlName="aceite2"
+            type="text"
+            class="form-control mt-2"
+            id="aceite2"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------Vuelo---------------------------------- -->
+    <div *ngIf="mostrarTransportacion" id="transportacion" class="col-md-12">
+      <div class="row">
+        <div class="col-sm-6">
+          <label for="vuelo" class="form-label">Vuelo</label>
+          <input
+            formControlName="vuelo"
+            type="text"
+            class="form-control"
+            id="vuelo"
+          />
+        </div>
+
+        <div class="col-sm-6">
+          <label for="no_boleto" class="form-label">Km. recorridos</label>
+          <input
+            formControlName="no_boleto"
+            type="text"
+            class="form-control"
+            id="no_boleto"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------Gastos de Materiales---------------------------------- -->
+    <div *ngIf="mostrarGastosDeMateriales" id="gastos_materiales" class="col-md-12">
+      <label for="gastos_materiales" class="form-label"
+        >Gastos de Materiales</label
+      >
+      <div class="row">
+        <div class="col-sm-2">
+          <label for="gm_solicitud1" class="form-label">No. Solicitud</label>
+          <input
+            formControlName="gm_solicitud1"
+            type="text"
+            class="form-control"
+            id="gm_solicitud1"
+          />
+          <input
+            formControlName="gm_solicitud2"
+            type="text"
+            class="form-control mt-2"
+            id="gm_solicitud2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="vale1" class="form-label">No. vale Salida</label>
+          <input
+            formControlName="vale1"
+            type="text"
+            class="form-control"
+            id="vale1"
+          />
+          <input
+            formControlName="vale2"
+            type="text"
+            class="form-control mt-2"
+            id="vale2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="descripcion1" class="form-label">Descripción</label>
+          <input
+            formControlName="descripcion1"
+            type="text"
+            class="form-control"
+            id="descripcion1"
+          />
+          <input
+            formControlName="descripcion2"
+            type="text"
+            class="form-control mt-2"
+            id="descripcion2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="precio1" class="form-label">Precio</label>
+          <input
+            formControlName="precio1"
+            type="text"
+            class="form-control"
+            id="precio1"
+          />
+          <input
+            formControlName="precio2"
+            type="text"
+            class="form-control mt-2"
+            id="precio2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="cantidad1" class="form-label">Cantidad</label>
+          <input
+            formControlName="cantidad1"
+            type="text"
+            class="form-control"
+            id="cantidad1"
+          />
+          <input
+            formControlName="cantidad2"
+            type="text"
+            class="form-control mt-2"
+            id="cantidad2"
+          />
+        </div>
+
+        <div class="col-sm-2">
+          <label for="costo_total1" class="form-label">Costo total</label>
+          <input
+            formControlName="costo_total1"
+            type="text"
+            class="form-control"
+            id="costo_total1"
+          />
+          <input
+            formControlName="costo_total2"
+            type="text"
+            class="form-control mt-2"
+            id="costo_total2"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------Fuerza de trabajo---------------------------------- -->
+
+    <div id="gastos_alimentacion_hospedaje" class="col-md-12">
+      <label for="gastos_alimentacion_hospedaje" class="form-label"
+        >Fuerza de Trabajo</label
+      >
+      <div class="row">
+        <div class="col-md-4">
+          <label for="f_t_1_nombre" class="form-label">Nombre</label>
+          <select
+            formControlName="f_t_1_nombre"
+            class="form-select"
+            aria-label="Default select example"
+            >
+            <option *ngFor="let worker of workers" [value]="worker.name">
+              {{ worker.name }}
+            </option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="f_t_1_calicicacion" class="form-label"
+            >Calificación</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            id="f_t_1_calicicacion"
+            [placeholder]="getWorkerLevel(workOrderForm.value.f_t_1_nombre) | hideNull"
+            disabled
+          />
+        </div>
+        <div class="col-md-4">
+          <label for="f_t_1_horas" class="form-label">Horas</label>
+          <input
+            formControlName="f_t_1_horas"
+            type="number"
+            class="form-control"
+            id="f_t_1_horas"
+          />
+        </div>
+        <div class="col-md-4 mt-0">
+          <label for="f_t_2_nombre" class="form-label"></label>
+          <select
+            formControlName="f_t_2_nombre"
+            class="form-select"
+            aria-label="Default select example"
+            >
+            <option *ngFor="let worker of workers" [value]="worker.name">
+              {{ worker.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-4 mt-0">
+          <label for="f_t_2_calicicacion" class="form-label"></label>
+           <input
+            type="text"
+            class="form-control"
+            id="f_t_2_calicicacion"
+            [placeholder]="getWorkerLevel(workOrderForm.value.f_t_2_nombre) | hideNull"
+            disabled
+          />
+        </div>
+        <div class="col-md-4 mt-0">
+          <label for="f_t_2_horas" class="form-label"></label>
+          <input
+            formControlName="f_t_2_horas"
+            type="number"
+            class="form-control"
+            id="f_t_2_horas"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------Observacion---------------------------------- -->
+    <div class="col-md-12">
+      <label for="observacion" class="form-label">Observación</label>
+      <textarea *ngIf="workOrder!=undefined"
+        formControlName="observacion"
+        type="text"
+        class="form-control"
+        id="observacion"
+        [placeholder]="workOrder.observacion!==null ? '':'Sin observación '"
+      ></textarea>
+    </div>
+
+    <!-- ------------Solicitud---------------------------------- -->
+    <div id="transportacion" class="col-md-12">
+      <div class="row">
+        <div class="col-md-4">
+          <label *ngIf="workOrder" for="system_id" class="form-label"
+          >OT_solicitada_nombre:
+        </label>
+        <select
+          formControlName="OT_solicitada_nombre"
+          class="form-select"
+          aria-label="Default select example"
+        >
+          <option *ngFor="let worker of workers" [value]="worker.name">
+            {{ worker.name }}
+          </option>
+        </select>
+        </div>
+
+
+        <div class="col-md-4">
+          <label for="OT_autorizada_nombre" class="form-label"
+            >OT autorizada por:</label
+          >
+          <select
+          formControlName="OT_autorizada_nombre"
+          class="form-select"
+          aria-label="Default select example"
+        >
+          <option *ngFor="let worker of workers" [value]="worker.name">
+            {{ worker.name }}
+          </option>
+        </select>
+        </div>
+
+
+        <div class="col-md-4">
+          <label for="OT_recibida_nombre" class="form-label"
+            >Recibido conforme:</label
+          >
+          <select
+          formControlName="OT_recibida_nombre"
+          class="form-select"
+          aria-label="Default select example"
+        >
+          <option *ngFor="let worker of workers" [value]="worker.name">
+            {{ worker.name }}
+          </option>
+        </select>
+        </div>
+
+
+        <div class="col-md-4 mt-3">
+          <label for="OT_solicitada_cargo" class="form-label">Cargo:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="OT_solicitada_cargo"
+            [placeholder]="getWorkerLevel(workOrderForm.value.OT_solicitada_nombre) | hideNull"
+            disabled
+          />
+        </div>
+        
+        <div class="col-md-4 mt-3">
+          <label for="OT_autorizada_cargo" class="form-label">Cargo:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="OT_autorizada_cargo"
+            [placeholder]="getWorkerLevel(workOrderForm.value.OT_autorizada_nombre) | hideNull"
+            disabled
+          />
+        </div>
+
+
+        <div class="col-md-4 mt-3">
+          <label for="OT_recibida_cargo" class="form-label">Cargo:</label>
+          <input
+            type="text"
+            class="form-control"
+            id="OT_recibida_cargo"
+            [placeholder]="getWorkerLevel(workOrderForm.value.OT_recibida_nombre) | hideNull"
+            disabled
+          />
+        </div>
+
+
+      </div>
+    </div>
+
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary mb-3">Guardar</button>
+      <button
+        type="button"
+        (click)="return()"
+        class="btn btn-outline-danger mb-3 ms-3"
+      >
+        Atrás
+      </button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,10 @@
+
+svg{
+    margin: 1.5px;
+    cursor: pointer;
+    transition: .2s ease-in-out transform;
+}
+
+.bd-navbar .navbar-brand {
+    transition: .2s ease-in-out transform;
+}

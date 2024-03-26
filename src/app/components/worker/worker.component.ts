@@ -14,7 +14,9 @@ export class WorkerComponent {
 
   workersList!:Worker[];
   newWorkerForm!:FormGroup;
+  workerID!:number;
   showAddWorker = false;
+  showEditWorker = false;
 
   constructor(
     private generalService:GeneralService,
@@ -39,35 +41,113 @@ export class WorkerComponent {
 
   onSubmit(){
     console.log(this.newWorkerForm.value)
-    this.workerService.createWorker(this.newWorkerForm.value).subscribe(
-      (response)=>{
-        this.toastr.success(
-          'Trabajador añadido',
-          'EXITO',
-          { timeOut: 1500, progressBar: true }
-        );
-        this.generalService.generateWorkers()
-        setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
-        this.newWorkerForm.reset();
-        this.onToggleNewworker();
-      },
-      (error)=>{
-        console.log(error);
-        this.toastr.error(
-          'El email ya esta en uso',
-          'EXITO',
-          { timeOut: 1500, progressBar: true }
-        );
-      }
-    )
+
+    if(this.showAddWorker){
+
+      this.workerService.createWorker(this.newWorkerForm.value).subscribe(
+        (response)=>{
+          this.toastr.success(
+            'Trabajador añadido',
+            'EXITO',
+            { timeOut: 1500, progressBar: true }
+          );
+          this.generalService.generateWorkers()
+          setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
+          this.newWorkerForm.reset();
+          this.onToggleNewworker();
+        },
+        (error)=>{
+          console.log(error);
+          this.toastr.error(
+            'El email ya esta en uso',
+            'ERROR',
+            { timeOut: 1500, progressBar: true }
+          );
+        }
+      )
+    }
+    else{
+      this.workerService.editWorker(this.newWorkerForm.value, this.workerID ).subscribe(
+        (response)=>{
+          this.toastr.success(
+            'Trabajador actualizado',
+            'EXITO',
+            { timeOut: 1500, progressBar: true }
+          );
+          this.generalService.generateWorkers()
+          setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
+        },
+        (error)=>{
+          console.log(error);
+          this.toastr.error(
+            'Error inesperado',
+            'ERROR',
+            { timeOut: 1500, progressBar: true }
+          );
+        }
+      )
+      this.showEditWorker = false;
+    }
   }
 
   onToggleNewworker(){
     this.showAddWorker = !this.showAddWorker
+    this.showEditWorker = false;
   }
 
   onCancelNewWorker(){
     this.newWorkerForm.reset();
     this.onToggleNewworker();
   }
+
+
+  onDeleteWorker(worker_id:number){
+
+    if(confirm("¿Desea Eliminar a este trabajador?")==true){
+
+      this.showEditWorker = false;
+      this.showAddWorker = false;
+  
+      this.workerService.deleteWorker(worker_id).subscribe(
+        (response)=>{
+          this.toastr.success(
+            'Trabajador eliminado',
+            'EXITO',
+            { timeOut: 1500, progressBar: true }
+          );
+          this.generalService.generateWorkers()
+          setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
+        },
+        (error)=>{
+          console.log(error);
+          this.toastr.error(
+            'Error inesperado',
+            'ERROR',
+            { timeOut: 1500, progressBar: true }
+          );
+        }
+      )
+    }
+    else{
+      return
+    }
+
+  }
+
+  onEditWorker(id:number){
+    let worker = this.generalService.getWorker(id)
+    this.workerID = id;
+
+    this.newWorkerForm = new FormGroup({
+      'name': new FormControl(worker.name, [Validators.required]),
+      'email': new FormControl(worker.email, [Validators.required, Validators.email]),
+      'phoneNumber': new FormControl(worker.phoneNumber, [Validators.required]),
+      'address': new FormControl(worker.address, [Validators.required]),
+      'level': new FormControl(worker.level, [Validators.required]),
+    })
+    this.showEditWorker = true;
+    this.showAddWorker = false;
+  }
+
+
 }

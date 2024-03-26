@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user.model';
 import { FormGroup } from '@angular/forms';
@@ -17,6 +17,11 @@ export class AuthService {
 
   token!:any;
 
+  headers= new HttpHeaders()
+  .set('Access-Control-Allow-Headers', 'Content-Type')
+  .set('Access-Control-Allow-Origin', 'http://orden-de-trabajo-v2.c1.is')
+  .set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+
 
   signUp(user:any){
 
@@ -25,7 +30,7 @@ export class AuthService {
   }
 
   signIn(user:FormGroup){
-    return this.httpClient.post(environment.apiUrl+'/api/auth/signin', user)
+    return this.httpClient.post(environment.apiUrl+'/api/auth/signin', user,{headers:this.headers})
   }
 
   saveToken(token:any){

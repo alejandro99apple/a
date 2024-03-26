@@ -95,7 +95,7 @@ export class WorkOrderListComponent {
 
   onFilter(){
     console.log(this.filterMonthForm.value)
-    this.workService.filterWorkOrdersPerMonth(this.filterMonthForm.value).subscribe(
+    this.workService.filterWorkOrdersPerMonth(this.filterMonthForm.value.year, this.filterMonthForm.value.month).subscribe(
       (response)=>{
         this.workOrderList = response;
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { System } from '../models/system.model';
 import { SubSystem } from '../models/sub-system.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { User } from '../models/user.model';
 
@@ -13,6 +13,12 @@ export class GeneralService {
   constructor(
     private httpClient:HttpClient ,
   ) { }
+
+  public headers= new HttpHeaders()
+    .set('Access-Control-Allow-Headers', 'Content-Type')
+    .set('Access-Control-Allow-Origin', '*')
+    .set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+
 
   private systems: System[] = [];
   private subSystems: SubSystem[] = [];
@@ -35,7 +41,7 @@ export class GeneralService {
 
   //-- Seccion para obtener los nombre de los trabajadores
   generateWorkers(){
-    this.httpClient.get<Worker[]>(environment.apiUrl+'/api/getWorkers').subscribe(
+    this.httpClient.get<Worker[]>(environment.apiUrl+'/api/getWorkers',{headers:this.headers}).subscribe(
       (response)=>{
         this.workers = response;
         sessionStorage.setItem('workers',JSON.stringify(this.workers))
@@ -48,9 +54,19 @@ export class GeneralService {
     return JSON.parse(sessionStorage.getItem('workers')||'{}')
   }
 
+  getWorker(id:number){
+    let workers = JSON.parse(sessionStorage.getItem('workers')||'{}')
+    for(let worker of workers){
+      if(worker.id === id){
+        return worker
+      }
+    }
+  }
+
   //-- Seccion para obtener los nombre de los sistemas y subsistemas al iniciar la app
   generateSystemsAndSubSystems(){
-    this.httpClient.get<any>(environment.apiUrl+'/api/generateSystems').subscribe(
+
+    this.httpClient.get<any>(environment.apiUrl+'/api/generateSystems',{headers:this.headers}).subscribe(
       (response)=>{
         this.systems = response.systems;
         sessionStorage.setItem('systems',JSON.stringify(this.systems))

@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/services/auth.service';
 import { GeneralService } from 'src/app/services/general.service';
+import { WorkOrderService } from 'src/app/services/work-order.service';
 
 @Component({
   selector: 'app-signin',
@@ -21,7 +22,8 @@ export class SigninComponent {
     private authService:AuthService,
     private generalService:GeneralService,
     private toastr:ToastrService,
-    private router:Router
+    private router:Router,
+    private workService:WorkOrderService
   ){}
 
 
@@ -32,6 +34,13 @@ export class SigninComponent {
       'password': new FormControl(null, [Validators.required]),
     })
 
+  }
+
+  onTest(){
+    this.workService.test().subscribe(
+      (response)=>console.log(response),
+      (error)=>console.log(error)
+    )
   }
 
   onSignIn(){

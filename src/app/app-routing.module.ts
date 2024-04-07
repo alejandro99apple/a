@@ -8,6 +8,7 @@ import { WorkOrderComponent } from './components/work-order/work-order.component
 import { WorkerComponent } from './components/worker/worker.component';
 import { SystemsComponent } from './components/systems/systems.component';
 import { authGuard } from './shared/auth.guard';
+import { adminGuard } from './shared/admin.guard';
 
 const routes: Routes = [
   {path: 'sign-up', component:SignupComponent},
@@ -16,8 +17,8 @@ const routes: Routes = [
   {path: 'home', canActivate:[authGuard], component:HomeComponent,children:[
     {path: 'work-order/:id', component:WorkOrderComponent},
     {path: 'work-order-list', component:WorkOrderListComponent},
-    {path: 'worker', component:WorkerComponent},
-    {path: 'systems', component:SystemsComponent},
+    {path: 'workers',canActivate:[adminGuard], component:WorkerComponent},
+    {path: 'systems',canActivate:[adminGuard], component:SystemsComponent},
 
   ]},
 

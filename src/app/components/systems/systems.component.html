@@ -1,1 +1,196 @@
-<p>systems works!</p>
+<mat-tab-group animationDuration="750ms">
+    <mat-tab label="Sistemas">
+
+        <div class="container mt-3">       
+            <div class="row mb-3">
+        
+                <div class="col-sm-6">
+                    <button (click)="onAddSystem()" style="display: flex; place-items: center;" class="btn btn-outline-success ">
+                        Añadir sistema
+                    </button>
+                </div>
+
+            </div>
+
+
+            <form *ngIf="newSystem || editSystem" [formGroup]="systemsForm" class="row g-3">
+        
+                <table class="table mt-3">
+                    <thead>
+                      <tr class="table-primary">
+                        <th style="cursor: pointer;" scope="col" [appSort]="subSystems" data-order="desc" data-name="name">Nombre</th>
+                        <th style="text-align: center;">Cancelar</th>
+                        <th style="text-align: center;">Añadir</th>
+                      </tr>
+                    </thead>
+            
+                    <tbody>
+                        <tr>
+                            <td> 
+                                <input class="form-control" type="text" formControlName="name">
+                            </td>
+        
+                            <td style="text-align: center; cursor: pointer;">  
+                                <img class="form-control-color" (click)="onCancel()" src="../../../assets/img/cancel.svg" alt="" width="24" height="24">
+                            </td>
+                            <td style="text-align: center; cursor: pointer;">  
+                                <img class="form-control-color" (click)="onSubmit()" src="../../../assets/img/confirm.svg" alt="" width="24" height="24">
+                            </td>
+                        </tr>
+            
+                    </tbody>
+            
+                </table>
+        
+            </form>
+
+
+            <table class="table mt-3">
+                <thead>
+                  <tr class="table-primary">
+                    <th style="cursor: pointer;" scope="col" [appSort]="systems" data-order="desc" data-name="name">Nombre</th>
+                    <th style="text-align: center;" scope="col">Editar</th>
+                    <th style="text-align: center;" scope="col">Eliminar</th>
+          
+                  </tr>
+                </thead>
+          
+                <tbody>
+          
+                  <tr  *ngFor="let Sys of systems">
+                    <th scope="row">{{Sys.name}}</th>
+    
+        
+                    <td style="text-align: center; cursor: pointer;"
+                      (click)="onStartEditingSystem(Sys.id)" 
+                      data-bs-toggle="tooltip" 
+                      data-bs-placement="top" 
+                      [title]="'Editar la información de '+Sys.name">
+                      <img  class="form-control-color"  src="../../../assets/img/edit-system.svg" alt="" width="24" height="24">
+                      
+                    </td>
+        
+                    <td style="text-align: center; cursor: pointer;"
+                        (click)="onDeleteSystem(Sys.id)"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top" 
+                        [title]="'Eliminar a '+Sys.name">
+                        <img class="form-control-color" src="../../../assets/img/delete-system.svg" alt="" width="32" height="32">
+                      </td>
+                    </tr>
+          
+                </tbody>
+              </table>
+
+        </div>
+
+    </mat-tab>
+
+    <mat-tab label="Instalaciones">
+
+        <div class="container mt-3">       
+            <div class="row mb-3">   
+                <div class="col-sm-6">
+                    <button (click)="onAddSubSystem()" style="display: flex; place-items: center;" class="btn btn-outline-success ">
+                        Añadir sub sistema
+                    </button>
+                </div>
+            </div>
+               
+            <form *ngIf="newSubSystem || editSubSystem" [formGroup]="subSystemsForm" class="row g-3 ms-0 m-0 e-0">
+        
+                <table class="table mt-3">
+                    <thead>
+                      <tr class="table-primary">
+                        <th style="text-align: center; cursor: pointer;" scope="col" [appSort]="subSystems" data-order="desc" data-name="name">Nombre</th>
+                        <th style="text-align: center; cursor: pointer;" scope="col" [appSort]="subSystems" data-order="desc" data-name="IT">Instrucción Técnica</th>
+                        <th style="text-align: center; cursor: pointer;" scope="col" [appSort]="subSystems" data-order="desc" data-name="system_id">Sistema</th>
+                        <th style="text-align: center;">Cancelar</th>
+                        <th style="text-align: center;">Añadir</th>
+                      </tr>
+                    </thead>
+            
+                    <tbody>
+                        <tr>
+                            <td> 
+                                <input class="form-control" type="text" formControlName="name">
+                            </td>
+            
+                            <td> 
+                                <input class="form-control" type="IT" formControlName="IT">
+                            </td>
+            
+                            <td>
+                                <select formControlName="system_id" formControlName="system_id" class="form-select" aria-label="Default select example">
+                                    <option *ngFor="let Sys of systems" [value]="Sys.id">
+                                        {{ Sys.name }}
+                                    </option>
+                                </select>
+                            </td>
+        
+                            <td style="text-align: center; cursor: pointer;">  
+                                <img class="form-control-color" (click)="onCancel()" src="../../../assets/img/cancel.svg" alt="" width="24" height="24">
+                            </td>
+                            <td style="text-align: center; cursor: pointer;">  
+                                <img class="form-control-color" (click)="onSubmit()" src="../../../assets/img/confirm.svg" alt="" width="24" height="24">
+                            </td>
+                        </tr>
+            
+                    </tbody>
+            
+                </table>
+        
+            </form>
+        
+            
+        
+            
+            <table class="table mt-3">
+                <thead>
+                  <tr class="table-primary">
+                    <th style="text-align: center; cursor: pointer;" scope="col" [appSort]="subSystems" data-order="desc" data-name="name">Nombre</th>
+                    <th style="text-align: center; cursor: pointer;" scope="col" [appSort]="subSystems" data-order="desc" data-name="IT">Instrucción Técnica</th>
+                    <th style="text-align: center; cursor: pointer;" scope="col" [appSort]="subSystems" data-order="desc" data-name="system_id">Sistema</th>
+                    <th style="text-align: center;" scope="col">Editar</th>
+                    <th style="text-align: center;" scope="col">Eliminar</th>
+          
+                  </tr>
+                </thead>
+          
+                <tbody>
+          
+                  <tr  *ngFor="let subSys of subSystems">
+                    <th scope="row">{{subSys.name}}</th>
+                    <td style="text-align: center;">{{subSys.IT}}</td>
+                    <td style="text-align: center;">{{obtainSystemName(subSys.system_id )}}</td>
+        
+        
+                    <td style="text-align: center; cursor: pointer;"
+                      class="text-info" 
+                      (click)="onStartEditingSubSystem(subSys.id)"
+                      data-bs-toggle="tooltip" 
+                      data-bs-placement="top" 
+                      [title]="'Editar la información de '+subSys.name">
+                      <img class="form-control-color" src="../../../assets/img/edit-system.svg" alt="" width="24" height="24">
+                      
+                    </td>
+        
+                    <td style="text-align: center; cursor: pointer;"
+                        class="text-info" 
+                        (click)="onDeleteSubSystem(subSys.id)"
+                        data-bs-toggle="tooltip" 
+                        data-bs-placement="top" 
+                        [title]="'Eliminar a '+subSys.name">
+                        <img class="form-control-color" src="../../../assets/img/delete-system.svg" alt="" width="24" height="24">
+                      </td>
+                    </tr>
+          
+                </tbody>
+              </table>
+        </div>
+
+
+    </mat-tab>
+    
+  </mat-tab-group>
+

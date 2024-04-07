@@ -1,78 +1,106 @@
 <div class="container mt-3">
 
-    <form [formGroup]="filterMonthForm" class="row g-3" (ngSubmit)="showWorkOrdersPerMonth()">
+    <form [formGroup]="filterMonthForm" class="g-2">
   
-      <div class="col-md-3">
-        <label for="year">Seleccione el año</label>
-        <select  id="year" formControlName="year" class="form-select form-select-md mb-3" style="max-width: 200px;" aria-label=".form-select-lg example">
-          <option *ngFor="let year of YEARS" [value]="year.value">{{year.value}}</option>
-        </select>
-      </div>
-        
-      <div class="col-md-3">
-        <label for="month">Seleccione el mes</label>
-        <select id="month" formControlName="month" class="form-select form-select-md" style="max-width: 200px;" aria-label=".form-select-sm example">
-          <option *ngFor="let month of MONTHS" [value]="month.value">{{month.viewValue}}</option>   
-        </select>
-      </div>
-  
-      <div class="col-md-2">
-        <button type="submit" class="btn btn-primary mb-3">Mostrar</button>
-      </div>
+      <div class="row">
 
-  
-    </form>
-    <br>
-    <form *ngIf="showNewOption" [formGroup]="newOrderForm" class="row g-3" (ngSubmit)="onAddNewWorkOrder()">
-
-       
-
-        <div class="input-group mb-3">
-            <div class="col-sm-1 pe-3">
-                <label for="day" class="form-label">Día</label>
-                <select  formControlName="day" class="form-select" aria-label="Default select example">
-                  <option *ngFor="let day of days" [value]='day'>{{day}}</option>
-                </select>
-            </div>
-
-            <div class="col-sm-1 pe-3">
-                <label for="numero_OT" class="form-label">No.</label>
-                <input formControlName="numero_OT" type="number" class="form-control" id="numero_OT">
-            </div>
-
-            <div class="col-sm-3 pe-3">
-              <label  for="system_id" class="form-label">Sistema:</label>
-              <select (change)="changeSubSystems()" formControlName="system_id" class="form-select" aria-label="Default select example">
-                <option *ngFor="let Sys of systems" [value]="Sys.id">{{Sys.name}}</option>
-              </select>
-            </div>
-  
-  
-            <div class="col-sm-3 pe-3">
-              <label  for="subSystem_id" class="form-label">Instalación o Equipo: </label>
-              <select aria-label="Disabled select example" formControlName="subSystem_id" class="form-select" aria-label="Default select example">
-                <option *ngFor="let subSys of subsystems" [value]="subSys.id">{{subSys.name}}</option>
-              </select>
-            </div>
-
-            <div class="col-sm-2 pe-3">
-              <label  for="type" class="form-label">Tipo: </label>
-              <select aria-label="Disabled select example" formControlName="type" class="form-select" aria-label="Default select example">
-                <option value="Mensual">Mensual</option>
-                <option value="Trimestral">Trimestral</option>
-                <option value="Semestral">Semestral</option>
-                <option value="Anual">Anual</option>
-              </select>
-            </div>
-
-            <div class="col-md-2">
-                <button type="button" (click)="onAddNewWorkOrder()" class="btn btn-primary">Añadir</button>
-            </div>
+        <div class="col-md-3" >
+          <label for="year">Seleccione el año</label>
+          <select (change)="onFilter()"  id="year" formControlName="year" class="form-select form-select-md mb-3" style="max-width: 200px;" aria-label=".form-select-lg example">
+            <option selected *ngFor="let year of YEARS" [value]="year.value">{{year.value}}</option>
+          </select>
         </div>
+          
+        <div class="col-md-3" >
+          <label for="month">Seleccione el mes</label>
+          <select (change)="onFilter()" id="month" formControlName="month" class="form-select form-select-md" style="max-width: 200px;" aria-label=".form-select-sm example">
+            <option *ngFor="let month of MONTHS" [value]="month.value">{{month.viewValue}}</option>   
+          </select>
+        </div>
+      </div>
   
+      
+      
+    </form>
+    <div *ngIf="isAdmin" class="col-md-12" >
+      <button type="button" (click)="onStartAddindNewWorkOrder()" class="btn btn-outline-success mb-3">Crear Orden de Trabajo</button>
+    </div>
+    <br>
+
+    <form *ngIf="showNewForm" [formGroup]="newOrderForm" class="row g-3">
+
+      <table class="table">
+        <thead>
+            <tr class="table-primary">
+                <th style="cursor: pointer;" scope="col" [appSort]="YEARS" data-order="desc" data-name="name">
+                    No.</th>
+                <th style="cursor: pointer;" scope="col" [appSort]="YEARS" data-order="desc" data-name="email"
+                    data-type="date">Día</th>
+                <th style="cursor: pointer;" scope="col" [appSort]="YEARS" data-order="desc"
+                    data-name="f_terminac" data-type="date">Sistema</th>
+                <th style="cursor: pointer;" scope="col" [appSort]="YEARS" data-order="desc" data-name="type">
+                    Instalación</th>
+                <th style="cursor: pointer;" scope="col" [appSort]="YEARS" data-order="desc"
+                    data-name="OT_solicitada_nombre">Tipo</th>
+                <th style="cursor: pointer;" scope="col">Cancelar</th>
+                <th style="cursor: pointer;" scope="col">Crear</th>
 
 
-    
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+
+                <td>
+                    <input class="form-control" type="text" formControlName="numero_OT">
+                </td>
+
+                <td>
+                  <select  formControlName="day" class="form-select" aria-label="Default select example">
+                    <option *ngFor="let day of days" [value]='day'>{{day}}</option>
+                  </select>
+                </td>
+
+                <td>
+                  <select id="systems" (change)="changeSystems()" formControlName="system_id" class="form-select" aria-label="Default select example">
+                    <option *ngFor="let Sys of systems" [value]="Sys.id">{{Sys.name}}</option>
+                  </select>
+                </td>
+
+
+                <td>
+                  <form [formGroup]="secondForm">
+                    <td>
+                      <select id="subSystems" (change)="changeSubSystems()" aria-label="Disabled select example" formControlName="subSystem_id" class="form-select" aria-label="Default select example">
+                        <option  *ngFor="let subSys of subsystems" [value]="subSys.id">{{subSys.name}}</option>
+                      </select>
+                    </td>
+                  </form>
+                </td>
+
+                <td>
+                  <select aria-label="Disabled select example" formControlName="type" class="form-select" aria-label="Default select example">
+                    <option value="Mensual">Mensual</option>
+                    <option value="Trimestral">Trimestral</option>
+                    <option value="Semestral">Semestral</option>
+                    <option value="Anual">Anual</option>
+                    <option value="Correctivo">Correctivo</option>
+                  </select>
+                </td>
+                <td style="text-align: center; cursor: pointer;">
+                    <img class="form-control-color" (click)="onStartAddindNewWorkOrder()" src="../../../assets/img/cancel.svg" alt="" width="24"
+                        height="24">
+                </td>
+                <td style="text-align: center; cursor: pointer;">
+                    <img class="form-control-color" (click)="onAddNewWorkOrder()" src="../../../assets/img/confirm.svg" alt="" width="24" height="24">
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+       
     </form>
     
 </div>
@@ -89,6 +117,7 @@
             <th style="cursor: pointer;" scope="col" [appSort]="workOrderList" data-order="desc" data-name="OT_solicitada_nombre">Solicitada por</th>
             <th style="cursor: pointer;" scope="col" [appSort]="workOrderList" data-order="desc" data-name="system_id">Sistema/Instalación</th>
             <th scope="col">Editar</th>
+            <th *ngIf="isAdmin" scope="col">Eliminar</th>
   
           </tr>
         </thead>
@@ -112,12 +141,17 @@
               Orden de Trabajo
               </a>
             </td>
+
+            <td *ngIf="isAdmin" style="text-align: center; cursor: pointer;" class="text-info" (click)="onDeleteWorkOrder(workOrder.id)" data-bs-toggle="tooltip" data-bs-placement="top"
+              [title]="'Eliminar Orden de trabajo'">
+              <img class="form-control-color" src="../../../assets/img/delete-work-order.svg" alt="" width="24" height="24">
+            </td>
           </tr>
   
         </tbody>
       </table>
   </div>
-<div class="container"  *ngIf="workOrderList.length == 0 && btnTouched">
-  <h2 style="color: rgb(173, 173, 173); font-style: italic;">No existen órdenes de trabajo planificadas</h2>
+<div class="container"  *ngIf="workOrderList.length == 0">
+  <h2 style="color: rgb(173, 173, 173); font-style: italic;">No existen órdenes de trabajo planificadas en este mes</h2>
 </div>
   

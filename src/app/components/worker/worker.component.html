@@ -1,108 +1,116 @@
-<div class="container"  *ngIf="workersList.length != 0">
-    <div class="row">
-        <div class="col-sm-6"><h2>Órdenes de trabajo</h2></div>
-        <div class="col-sm-6">
-            <button (click)="onToggleNewworker()" style="display: flex; place-items: center;" class="btn btn-outline-success ">
-                Añadir trabajador <img src="../../../assets/img/add-user.svg" alt="" width="24" height="24">
-            </button>
+<div class="container" *ngIf="workersList.length != 0">
+
+    <label>
+        <h2>Trabajadores</h2>
+    </label>
+    <div class="col-sm-6">
+        <button (click)="onToggleNewworker()" style="display: flex; place-items: center;"
+            class="btn btn-outline-success mb-3">
+            Añadir trabajador
+        </button>
     </div>
 
-    <form *ngIf="showAddWorker || showEditWorker" style="padding-left: 0px; padding-right: 0px;" [formGroup]="newWorkerForm">
+    <form *ngIf="showAddWorker || showEditWorker" style="padding-left: 0px; padding-right: 0px;"
+        [formGroup]="newWorkerForm">
         <table class="table">
             <thead>
                 <tr class="table-primary">
-                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="name">Nombre</th>
-                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="email" data-type="date">Email</th>
-                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="f_terminac" data-type="date">Teléfono</th>
-                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="type">Dirección</th>
-                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="OT_solicitada_nombre">Cargo</th>
-                    <th style="cursor: pointer;" scope="col" >Cancelar</th>
-                    <th style="cursor: pointer;" scope="col" >{{showAddWorker ? 'Añadir' : 'Editar'}}</th>
+                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="name">
+                        Nombre</th>
+                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="email"
+                        data-type="date">Email</th>
+                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc"
+                        data-name="f_terminac" data-type="date">Teléfono</th>
+                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="type">
+                        Dirección</th>
+                    <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc"
+                        data-name="OT_solicitada_nombre">Cargo</th>
+                    <th style="text-align: center;" scope="col">Cancelar</th>
+                    <th style="text-align: center;" scope="col">{{showAddWorker ? 'Añadir' : 'Editar'}}</th>
 
-        
-                 </tr>
+
+                </tr>
             </thead>
-  
+
             <tbody>
-  
-                    <tr>
-            
-                            <td> 
-                                <input class="form-control" type="text" formControlName="name">
-                            </td>
-            
-                            <td> 
-                                <input class="form-control" type="email" formControlName="email">
-                            </td>
-            
-                            <td> 
-                                <input class="form-control" type="number" formControlName="phoneNumber">
-                            </td>
-            
-                            <td> 
-                                <input class="form-control" type="text" formControlName="address">
-                            </td>
-            
-                            <td> 
-                                <input class="form-control" type="text" formControlName="level">
-                            </td>
-                            <td style="text-align: center; padding-left: 0px; cursor: pointer;">  
-                                <img (click)="onCancelNewWorker()" src="../../../assets/img/cancel.svg" alt="" width="24" height="24">
-                            </td>
-                            <td style="text-align: center; padding-left: 0px; cursor: pointer;">  
-                                <img (click)="onSubmit()" src="../../../assets/img/confirm.svg" alt="" width="24" height="24">
-                            </td>
-                    </tr>
-  
+
+                <tr>
+
+                    <td>
+                        <input class="form-control" type="text" formControlName="name">
+                    </td>
+
+                    <td>
+                        <input class="form-control" type="email" formControlName="email">
+                    </td>
+
+                    <td>
+                        <input class="form-control" type="number" formControlName="phoneNumber">
+                    </td>
+
+                    <td>
+                        <input class="form-control" type="text" formControlName="address">
+                    </td>
+
+                    <td>
+                        <input class="form-control" type="text" formControlName="level">
+                    </td>
+                    <td style="text-align: center; padding-left: 0px; cursor: pointer;">
+                        <img class="form-control-color" (click)="onCancelNewWorker()" src="../../../assets/img/cancel.svg" alt="" width="24"
+                            height="24">
+                    </td>
+                    <td style="text-align: center; padding-left: 0px; cursor: pointer;">
+                        <img class="form-control-color" (click)="onSubmit()" src="../../../assets/img/confirm.svg" alt="" width="24" height="24">
+                    </td>
+                </tr>
+
             </tbody>
         </table>
     </form>
-    
+
     <table class="table">
         <thead>
-          <tr class="table-primary">
-            <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="name">Nombre</th>
-            <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="email">Email</th>
-            <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="phoneNumber">Teléfono</th>
-            <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="address">Dirección</th>
-            <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="level">Cargo</th>
-            <th scope="col">Editar</th>
-            <th scope="col">Eliminar</th>
-  
-          </tr>
-        </thead>
-  
-        <tbody>
-  
-          <tr  *ngFor="let worker of workersList">
-            <th scope="row">{{worker.name}}</th>
-            <td>{{worker.email}}</td>
-            <td>{{worker.phoneNumber }}</td>
-            <td>{{worker.address}}</td>
-            <td>{{worker.level}}</td>
+            <tr class="table-primary">
+                <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="name">
+                    Nombre</th>
+                <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="email">
+                    Email</th>
+                <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc"
+                    data-name="phoneNumber">Teléfono</th>
+                <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="address">
+                    Dirección</th>
+                <th style="cursor: pointer;" scope="col" [appSort]="workersList" data-order="desc" data-name="level">
+                    Cargo</th>
+                <th style="text-align: center;" scope="col">Editar</th>
+                <th style="text-align: center;" scope="col">Eliminar</th>
 
-            <td style="text-align: center;" 
-              class="text-info" 
-              (click)="onEditWorker(worker.id)"
-              style="cursor: pointer;" 
-              data-bs-toggle="tooltip" 
-              data-bs-placement="top" 
-              [title]="'Editar la información de '+worker.name">
-              <img  src="../../../assets/img/edit-user.svg" alt="" width="24" height="24">
-              
-            </td>
-
-            <td style="text-align: center;"
-                class="text-info" 
-                (click)="onDeleteWorker(worker.id)"
-                style="cursor: pointer;" 
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top" 
-                [title]="'Eliminar a '+worker.name">
-                <img src="../../../assets/img/delete-user.svg" alt="" width="24" height="24">
-              </td>
             </tr>
-  
+        </thead>
+
+        <tbody>
+
+            <tr *ngFor="let worker of workersList">
+                <th scope="row">{{worker.name}}</th>
+                <td>{{worker.email}}</td>
+                <td>{{worker.phoneNumber }}</td>
+                <td>{{worker.address}}</td>
+                <td>{{worker.level}}</td>
+
+                <td  class="text-info" (click)="onEditWorker(worker.id)"
+                    data-bs-toggle="tooltip" data-bs-placement="top"
+                    [title]="'Editar la información de '+worker.name">
+                    <img class="form-control-color" src="../../../assets/img/edit-user.svg" alt="" width="24" height="24">
+
+                </td>
+
+                <td style="text-align: center; cursor: pointer;" class="text-info" (click)="onDeleteWorker(worker.id)" data-bs-toggle="tooltip" data-bs-placement="top"
+                    [title]="'Eliminar a '+worker.name">
+                    <img class="form-control-color" src="../../../assets/img/delete-user.svg" alt="" width="24" height="24">
+                </td>
+            </tr>
+
         </tbody>
-      </table>
-  </div>
+    </table>
+
+
+</div>    

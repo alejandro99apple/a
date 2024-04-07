@@ -28,7 +28,6 @@ export class WorkerComponent {
 
   ngOnInit(){
     this.workersList = this.generalService.getWorkers();
-
     this.newWorkerForm = new FormGroup({
       'name': new FormControl(null, [Validators.required]),
       'email': new FormControl(null, [Validators.required, Validators.email]),
@@ -46,15 +45,28 @@ export class WorkerComponent {
 
       this.workerService.createWorker(this.newWorkerForm.value).subscribe(
         (response)=>{
-          this.toastr.success(
-            'Trabajador añadido',
-            'EXITO',
-            { timeOut: 1500, progressBar: true }
-          );
-          this.generalService.generateWorkers()
-          setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
-          this.newWorkerForm.reset();
-          this.onToggleNewworker();
+
+          let data:{message:string,status:number, code:number}=<any>response
+
+          if(data.status==0){
+            this.toastr.warning(
+              data.message,
+              'WARNING',
+              { timeOut: 1500, progressBar: true }
+            );
+          }
+
+          else if(data.status==1){
+            this.toastr.success(
+              data.message,
+              'EXITO',
+              { timeOut: 1500, progressBar: true }
+            );
+            this.generalService.generateWorkers()
+            setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
+            this.newWorkerForm.reset();
+            this.onToggleNewworker();
+          }
         },
         (error)=>{
           console.log(error);
@@ -69,13 +81,16 @@ export class WorkerComponent {
     else{
       this.workerService.editWorker(this.newWorkerForm.value, this.workerID ).subscribe(
         (response)=>{
-          this.toastr.success(
-            'Trabajador actualizado',
-            'EXITO',
-            { timeOut: 1500, progressBar: true }
-          );
-          this.generalService.generateWorkers()
-          setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
+          let responseData:{status:number,message:string,code:number} = <any>response
+          if(responseData.status==1){
+            this.toastr.success(
+              'Trabajador actualizado',
+              'EXITO',
+              { timeOut: 1500, progressBar: true }
+            );
+            this.generalService.generateWorkers()
+            setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
+          }
         },
         (error)=>{
           console.log(error);
@@ -110,13 +125,16 @@ export class WorkerComponent {
   
       this.workerService.deleteWorker(worker_id).subscribe(
         (response)=>{
-          this.toastr.success(
-            'Trabajador eliminado',
-            'EXITO',
-            { timeOut: 1500, progressBar: true }
-          );
-          this.generalService.generateWorkers()
-          setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
+          let responseData:{status:number,message:string,code:number} = <any>response
+          if(responseData.status==1){
+            this.toastr.success(
+              'Trabajador eliminado',
+              'EXITO',
+              { timeOut: 1500, progressBar: true }
+            );
+            this.generalService.generateWorkers()
+            setTimeout(()=>{;this.workersList = this.generalService.getWorkers();},1500)
+          }
         },
         (error)=>{
           console.log(error);
@@ -148,6 +166,5 @@ export class WorkerComponent {
     this.showEditWorker = true;
     this.showAddWorker = false;
   }
-
 
 }

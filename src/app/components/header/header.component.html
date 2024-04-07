@@ -1,11 +1,132 @@
 
-<div *ngIf="opened; else elseBlock">
-    <svg (click)="toggleSidebar()" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
-      </svg>
-</div>
-<ng-template #elseBlock>
-    <svg (click)="toggleSidebar()" xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
-        <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-    </svg>
-</ng-template>
+
+<!-- <nav class="navbar">
+
+    <button *ngIf="isAdmin" mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+        <img src="../../../assets/img/more_vert.svg" alt="three dots">
+    </button>
+    <mat-menu #menu="matMenu">
+        <button (click)="Navigate('work-order-list')" mat-menu-item>
+            <img src="../../../assets/img/receipt_long.svg" alt="three dots">
+            <span>   Órdenes de Trabajo</span>
+        </button>
+        <button (click)="Navigate('workers')" mat-menu-item>
+            <img src="../../../assets/img/engineering.svg" alt="workers">
+            <span>   Trabajadores</span>
+        </button>
+        <button (click)="Navigate('systems')" mat-menu-item>
+            <img src="../../../assets/img/radar.svg" alt="radar">
+            <span>   Sistemas</span>
+        </button>
+
+    </mat-menu>
+
+
+    <ul class="nav navbar-nav navbar-right" style="padding-left: .5em;">
+        <button mat-icon-button [matMenuTriggerFor]="user" >
+            <img *ngIf="isAdmin" style="border-radius: 2px;" src="../../../assets/img/admin.png" alt="three dots">
+            <img *ngIf="!isAdmin" style="border-radius: 2px;" src="../../../assets/img/engineer.png" alt="three dots">
+        </button>
+        <mat-menu #user="matMenu">
+            <button (click)="onLogout()" mat-menu-item>
+                <img src="../../../assets/img/receipt_long.svg" alt="three dots">
+                <span>Logout</span>
+            </button>
+        </mat-menu>
+
+        
+    </ul>
+
+</nav> -->
+
+<nav class="navbar sticky-top navbar-light bg-light">
+
+    <div style=" display: flex;align-items: center;" class="container-fluid justify-content-sm-start">
+
+        <a data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample">
+            <div class="image-container">
+                <img *ngIf="isAdmin" src="../../../assets/img/admin.png" alt="" width="32" height="32"> 
+                <img *ngIf="!isAdmin" src="../../../assets/img/engineer.png" alt="" width="32" height="32"> 
+                
+            </div>
+        </a>
+        <a data-bs-toggle="offcanvas" href="#offcanvasExample" role="button" aria-controls="offcanvasExample" style="margin: 0; text-decoration: none; color: black;">   {{user.username == 'admin' ? 'Administrador' : "Técnico"}}</a>
+
+          
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel" style="max-width: 300px;">
+            <div class="offcanvas-header">
+                <div class="image-container">
+                    <img *ngIf="isAdmin" src="../../../assets/img/admin.png" alt="" width="32" height="32"> 
+                    <img *ngIf="!isAdmin" src="../../../assets/img/engineer.png" alt="" width="32" height="32"> 
+                </div>
+                <a  style="margin: 0;"><strong>{{user.username == 'admin' ? 'Administrador' : "Técnico"}}</strong></a>
+              <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+
+
+            <div class="offcanvas-body">
+                <mat-divider *ngIf="isAdmin"></mat-divider>
+
+
+                <ul class="nav flex-column pt-3">
+                    <li *ngIf="isAdmin" class="nav-item">
+                      <a  
+                            data-bs-toggle="offcanvas" 
+                            style="color: black;"
+                            class="nav-link active" 
+                            aria-current="page" 
+                            routerLink="/home/work-order-list">
+                            <img src="../../../assets/img/receipt_long.svg" alt="work-order-list">
+                               Órdenes de Trabajo
+                      </a>
+                    </li>
+
+                    <li *ngIf="isAdmin" class="nav-item">
+                      <a  
+                            style="color: black;"
+                            data-bs-toggle="offcanvas" 
+                            class="nav-link active" 
+                            aria-current="page" 
+                            routerLink="/home/workers">
+                            <img src="../../../assets/img/engineering.svg" alt="workers">
+                               Trabajadores
+                      </a>
+                    </li>
+                    
+                    <li *ngIf="isAdmin" class="nav-item pb-3">
+                      <a  
+                            style="color: black;"
+                            data-bs-toggle="offcanvas"  
+                            class="nav-link active" 
+                            aria-current="page" 
+                            routerLink="/home/systems">
+                            <img src="../../../assets/img/radar.svg" alt="systems">
+                               Sistemas
+                      </a>
+                    </li>
+
+                    <mat-divider></mat-divider>
+                    <li class="nav-item pt-3">
+                      <a  
+                            style="color: black; cursor: pointer;" 
+                            class="nav-link active" 
+                            aria-current="page" 
+                            (click)="onLogout()">
+                            <img src="../../../assets/img/logout.svg" alt="systems" width="24" height="24">
+                               Salir
+                      </a>
+                    </li>
+                </ul>
+
+
+
+
+
+            </div>
+
+            
+        </div>
+        
+    </div>
+</nav>
+

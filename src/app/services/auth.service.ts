@@ -17,11 +17,6 @@ export class AuthService {
 
   token!:any;
 
-  headers= new HttpHeaders()
-  .set('Access-Control-Allow-Headers', 'Content-Type')
-  .set('Access-Control-Allow-Origin', 'http://orden-de-trabajo-v2.c1.is')
-  .set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-
 
   signUp(user:any){
 
@@ -30,11 +25,21 @@ export class AuthService {
   }
 
   signIn(user:FormGroup){
-    return this.httpClient.post(environment.apiUrl+'/api/auth/signin', user,{headers:this.headers})
+    return this.httpClient.post(environment.apiUrl+'/api/auth/signin', user)
+  }
+
+  logout(){
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    this.router.navigate(['/sign-in']);
   }
 
   saveToken(token:any){
     localStorage.setItem('token',token)
+  }
+
+  saveUser(user:User){
+    localStorage.setItem('user',JSON.stringify(user))
   }
 
   me(){

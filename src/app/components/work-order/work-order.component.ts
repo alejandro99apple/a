@@ -474,20 +474,24 @@ export class WorkOrderComponent {
     this.workOrderForm.value.OT_recibida_cargo = this.getWorkerLevel(this.workOrderForm.value.OT_recibida_nombre)
 
 
-    if(this.workOrderForm.value.system_id == 24){
+    if(this.workOrderForm.value.system_id == 24 || this.workOrderForm.value.type == "Correctivo"){
       alert('Recuerde modificar el documento word de esta orden de trabajo')
     }
+
+
 
     this.workOrderService
       .editWord(this.workOrderForm.value,this.id_workOrder,)
       .subscribe(
         (response) => {
-          console.log(response)
-          this.toastr.success(
-            'Orden de trabajo creada',
-            'EXITO',
-            { timeOut: 1500, progressBar: true }
-          );
+          let responseData:{status:number,message:string,code:number} = <any>response
+          if(responseData.status==1){
+            this.toastr.success(
+              'Orden de trabajo creada',
+              'EXITO',
+              { timeOut: 1500, progressBar: true }
+            );
+          }
         },
         (error) => {
           console.log(error);

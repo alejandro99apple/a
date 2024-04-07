@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { environment } from 'src/environments/environment';
@@ -11,15 +11,8 @@ export class WorkerService {
     private httpClient:HttpClient 
   ) { }
 
-  public headers= new HttpHeaders()
-  .set('Access-Control-Allow-Headers', 'Content-Type')
-  .set('Access-Control-Allow-Origin', '*')
-  .set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-
-
-
   createWorker(worker:FormGroup){
-    return this.httpClient.post(environment.apiUrl+'/api/createWorker',worker, {headers:this.headers})
+    return this.httpClient.post(environment.apiUrl+'/api/createWorker',worker)
   }
 
   editWorker(worker:FormGroup, id:number){
@@ -29,5 +22,4 @@ export class WorkerService {
   deleteWorker(id:number){
     return this.httpClient.get(environment.apiUrl+'/api/deleteWorker/'+id)
   }
-
 }

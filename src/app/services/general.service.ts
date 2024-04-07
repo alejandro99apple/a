@@ -3,21 +3,18 @@ import { System } from '../models/system.model';
 import { SubSystem } from '../models/sub-system.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
-import { User } from '../models/user.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeneralService {
 
+
   constructor(
     private httpClient:HttpClient ,
-  ) { }
 
-  public headers= new HttpHeaders()
-    .set('Access-Control-Allow-Headers', 'Content-Type')
-    .set('Access-Control-Allow-Origin', '*')
-    .set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  ) { }
 
 
   private systems: System[] = [];
@@ -41,7 +38,7 @@ export class GeneralService {
 
   //-- Seccion para obtener los nombre de los trabajadores
   generateWorkers(){
-    this.httpClient.get<Worker[]>(environment.apiUrl+'/api/getWorkers',{headers:this.headers}).subscribe(
+    this.httpClient.get<Worker[]>(environment.apiUrl+'/api/getWorkers').subscribe(
       (response)=>{
         this.workers = response;
         sessionStorage.setItem('workers',JSON.stringify(this.workers))
@@ -52,6 +49,10 @@ export class GeneralService {
 
   getWorkers(){
     return JSON.parse(sessionStorage.getItem('workers')||'{}')
+  }
+
+  getUser(){
+    return JSON.parse(localStorage.getItem('user')||'{}')
   }
 
   getWorker(id:number){
@@ -66,7 +67,7 @@ export class GeneralService {
   //-- Seccion para obtener los nombre de los sistemas y subsistemas al iniciar la app
   generateSystemsAndSubSystems(){
 
-    this.httpClient.get<any>(environment.apiUrl+'/api/generateSystems',{headers:this.headers}).subscribe(
+    this.httpClient.get<any>(environment.apiUrl+'/api/generateSystems').subscribe(
       (response)=>{
         this.systems = response.systems;
         sessionStorage.setItem('systems',JSON.stringify(this.systems))
@@ -108,5 +109,24 @@ export class GeneralService {
     const subsystem = this.subSystems.find(s => s.id === subSystem_id);
     return subsystem ? subsystem.name : 'No encontrado';
   }
+
+  obtainSubSystemByID(id:number){
+    let subSystems = this.getSubSystems();
+    for(let subSys of subSystems){
+      if(subSys.id === id){
+        return subSys
+      }
+    }
+  }
+
+  obtainSystemByID(id:number){
+    let systems = this.getSystems();
+    for(let Sys of systems){
+      if(Sys.id === id){
+        return Sys
+      }
+    }
+  }
+
 
 }

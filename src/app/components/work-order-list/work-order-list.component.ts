@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 import { SubSystem } from 'src/app/models/sub-system.model';
 import { System } from 'src/app/models/system.model';
 import { WorkOrder } from 'src/app/models/work-order.model';
@@ -12,16 +13,6 @@ import { WorkOrderService } from 'src/app/services/work-order.service';
   styleUrls: ['./work-order-list.component.css']
 })
 export class WorkOrderListComponent {
-
-  date!:string;
-  filterMonthForm:any;
-  newOrderForm:any;
-  workOrderList : WorkOrder[] = [];
-  subsystems!:SubSystem[];
-  systems!:System[];
-  btnTouched = false;
-  days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
-  showNewOption = false;
   
   MONTHS = [
     {value: '01', viewValue: 'Enero'},
@@ -47,34 +38,43 @@ export class WorkOrderListComponent {
 
   ];
 
+  date!:string;
+  secondForm!:FormGroup;
+  filterMonthForm:any;
+  newOrderForm:any;
+  workOrderList : WorkOrder[] = [];
+  subsystems!:SubSystem[];
+  systems!:System[];
+  days = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31];
+  showNewForm = false;
+  isAdmin = false;
+  
+
   constructor(
     private workService:WorkOrderService,
     private generalService:GeneralService,
+    private toastr:ToastrService,
   ){
   }
 
-  ngOnInit(){
+  selectedIndexSystem:number = 0;
+  systemField!:any;
+  selectedIndexSubSystem:number = 0;
+  subSystemField!:any;
 
+
+  ngOnInit(){
+    this.isAdmin = this.generalService.getUser().username == 'admin' ? true  : false;
     this.date = new Date(Date.now()).toISOString().slice(0,10)
     this.systems = this.generalService.getSystems()
-    this.subsystems = this.generalService.obtainSubSystemsPerSystem(1)
-
+    this.subsystems = this.generalService.obtainSubSystemsPerSystem(this.systems[0].id);
 
     this.filterMonthForm = new FormGroup({
       year: new FormControl(),
       month: new FormControl(),
     });
 
-    this.newOrderForm = new FormGroup({
-      day: new FormControl(1),
-      system_id: new FormControl(1),
-      subSystem_id: new FormControl(1),
-      type: new FormControl('Mensual'),
-      numero_OT: new FormControl(0),
-    });
-
-    this.systems = this.generalService.getSystems()
-    this.subsystems = this.generalService.obtainSubSystemsPerSystem(1)
+    this.generalService.setfilterDates(+this.date.slice(0,4),this.date.slice(5,7))
 
     if(this.generalService.getfilterDates()!=undefined){
       console.log('filter dates en init: '+this.generalService.getfilterDates().month)
@@ -87,14 +87,12 @@ export class WorkOrderListComponent {
     }
   }
 
-  showWorkOrdersPerMonth(){
-    this.btnTouched = true;
-    this.showNewOption = true;
-    this.onFilter()
-  }
 
   onFilter(){
     console.log(this.filterMonthForm.value)
+    if(this.showNewForm){
+      this.showNewForm = !this.showNewForm
+    }
     this.workService.filterWorkOrdersPerMonth(this.filterMonthForm.value.year, this.filterMonthForm.value.month).subscribe(
       (response)=>{
         this.workOrderList = response;
@@ -106,17 +104,104 @@ export class WorkOrderListComponent {
       }
     )
   }
+  
 
+  onStartAddindNewWorkOrder(){
+    if(this.showNewForm){
+      this.newOrderForm.reset();
+      this.showNewForm = false;
+    }
+    else{
+      this.InitForm();
+      this.showNewForm = true;
+      this.systemField = document.getElementById('systems') as HTMLSelectElement;
+      this.subSystemField = document.getElementById('subsystems') as HTMLSelectElement;
+    }
+  }
 
-  changeSubSystems(){
+  InitForm(){
+    this.newOrderForm = new FormGroup({
+      numero_OT: new FormControl(0),
+      day: new FormControl(1),
+      system_id: new FormControl(this.systems[0].id),
+      subSystem_id: new FormControl(this.subsystems[0].id),
+      type: new FormControl('Mensual'),
+    });
+
+    this.secondForm = new FormGroup({
+      subSystem_id: new FormControl(this.subsystems[0].id),
+
+    })
+
+    this.systemField = document.getElementById('systems') as HTMLSelectElement;
+    this.subSystemField = document.getElementById('subsystems') as HTMLSelectElement;
+  }
+
+  changeSystems(){
     this.subsystems = this.generalService.obtainSubSystemsPerSystem(parseInt(this.newOrderForm.value.system_id));
-    console.log('subssistemas: '+this.subsystems)
-    console.log('antes id sistema: '+this.newOrderForm.value.system_id)
+
     console.log('antes id Sub sistema: '+this.newOrderForm.value.subSystem_id)
     this.newOrderForm.value.subSystem_id = this.subsystems[0].id;
+
+    this.secondForm.reset();
+    this.secondForm.value.subSystem_id = this.subsystems[0].id;
+
     console.log('despues id sistema: '+this.newOrderForm.value.system_id)
     console.log('despues id Sub sistema: '+this.newOrderForm.value.subSystem_id)
   }
+
+  changeSubSystems(){
+    this.selectedIndexSubSystem = this.newOrderForm.value.subSystem_id;
+  }
+
+  onAddNewWorkOrder(){
+    this.newOrderForm.value.subSystem_id = this.secondForm.value.subSystem_id;
+    console.log('valor del subsistema al submit: '+this.newOrderForm.value.subSystem_id)
+    let day =  this.newOrderForm.value.day < 10 ? '0'+this.newOrderForm.value.day : this.newOrderForm.value.day
+    this.newOrderForm.value.f_emision = this.filterMonthForm.value.year+'/'+this.filterMonthForm.value.month+'/'+day;
+
+    this.workService.createWorkOrder(this.newOrderForm.value).subscribe(
+      (response)=>{
+        console.log(response)
+
+        let data:{status:number,message:string}
+        data = <any>response
+
+        if(data.status===1){
+          this.onFilter();
+          this.subsystems = this.generalService.obtainSubSystemsPerSystem(1)
+          this.InitForm();
+          this.showNewForm = false;
+          this.toastr.success(
+            'Orden de trabajo creada',
+            'EXITO',
+            { timeOut: 1500, progressBar: true }
+          );
+
+        }
+        if(data.status===2){
+          this.toastr.warning(
+            'Ya existe una orden de trabajo con ese número',
+            'ATENCIÓN',
+            { timeOut: 1500, progressBar: true }
+          );
+          console.log('valor del subsistema fallar: '+this.newOrderForm.value.subSystem_id)
+        }
+
+
+      },
+      (error)=>{
+        console.log(error)
+        this.toastr.error(
+          'Error inesperado',
+          'ERROR',
+          { timeOut: 1500, progressBar: true }
+        );
+      }
+    )
+  }
+
+
 
   obtainSystemName(system_id:number){
     return this.generalService.obtainSystemName(system_id)
@@ -126,20 +211,38 @@ export class WorkOrderListComponent {
     return this.generalService.obtainSubSystemName(subSystem_id)
   }
 
-  onAddNewWorkOrder(){
-    let day =  this.newOrderForm.value.day < 10 ? '0'+this.newOrderForm.value.day : this.newOrderForm.value.day
-    this.newOrderForm.value.f_emision = this.filterMonthForm.value.year+'/'+this.filterMonthForm.value.month+'/'+day;
-    console.log('Valor'+this.newOrderForm)
-    this.workService.createWorkOrder(this.newOrderForm.value).subscribe(
-      (response)=>{
-        console.log(response)
-        this.onFilter()
-      },
-      (error)=>{
-        console.log(error)
-      }
-    )
+
+  onDeleteWorkOrder(workOrder_id:number){
+
+    if(confirm("¿Desea Eliminar esta orden de trabajo?")==true){
+
+
+  
+      this.workService.deleteWorker(workOrder_id).subscribe(
+        (response)=>{
+          let responseData:{status:number,message:string,code:number} = <any>response
+          if(responseData.status==1){
+            this.toastr.success(
+              'Orden de Trabajo eliminada',
+              'EXITO',
+              { timeOut: 1500, progressBar: true }
+            );
+            this.onFilter();
+          }
+        },
+        (error)=>{
+          console.log(error);
+          this.toastr.error(
+            'Error inesperado',
+            'ERROR',
+            { timeOut: 1500, progressBar: true }
+          );
+        }
+      )
+    }
+    else{
+      return
+    }
+
   }
-
-
 }

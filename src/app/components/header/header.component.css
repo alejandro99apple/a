@@ -8,3 +8,26 @@ svg{
 .bd-navbar .navbar-brand {
     transition: .2s ease-in-out transform;
 }
+
+.image-container {
+    width: 40px; /* Ancho de tu imagen */
+    height: 40px; /* Altura de tu imagen */
+    border-radius: 50%; /* Esto hace que el contenedor sea circular */
+    overflow: hidden; /* Oculta cualquier parte de la imagen que se salga del contenedor circular */
+    background-color: #ccc; /* Color de fondo del círculo (puedes cambiarlo según tus necesidades) */
+  }
+  
+  .image-container img {
+    width: 100%; /* Ajusta la imagen para que ocupe todo el contenedor circular */
+    height: auto; /* Mantiene la proporción de aspecto de la imagen */
+    display: block; /* Asegura que la imagen se comporte correctamente dentro del contenedor */
+}
+
+li a {
+    border-radius: 1em;
+}
+
+li a:hover{
+
+    background-color: rgb(110, 185, 207);
+}
